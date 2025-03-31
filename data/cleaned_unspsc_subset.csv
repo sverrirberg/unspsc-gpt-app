@@ -1,0 +1,112 @@
+code,level,subcategory,description
+5010,family,GS_FOOD,Nuts and seeds
+5011,family,GS_FOOD,Meat and poultry products
+5012,family,GS_FOOD,Seafood
+5013,family,GS_FOOD,Dairy products and eggs
+5015,family,GS_FOOD,Edible oils and fats
+5016,family,GS_FOOD,Chocolate and sugars and sweeteners and confectionary products
+5017,family,GS_FOOD,Seasonings and preservatives
+5018,family,GS_FOOD,Bread and bakery products
+5019,family,GS_FOOD,Prepared and preserved foods
+5020,family,GS_FOOD,Beverages
+5022,family,GS_FOOD,Cereal and pulse products
+5216,family,GS_ELECTRONICS,Consumer electronics
+4321,family,GS_ELECTRONICS,Computer Equipment and Accessories
+4319,family,GS_ELECTRONICS,Communications Devices and Accessories
+4320,family,GS_ELECTRONICS,Components for information technology or broadcasting or telecommunications
+3010,family,GS_CONSTRUCTION,Structural components and basic shapes
+3011,family,GS_CONSTRUCTION,Concrete and cement and plaster
+3012,family,GS_CONSTRUCTION,Roads and landscape
+3013,family,GS_CONSTRUCTION,Structural building products
+3014,family,GS_CONSTRUCTION,Insulation
+3015,family,GS_CONSTRUCTION,Exterior finishing materials
+3016,family,GS_CONSTRUCTION,Interior finishing materials
+3017,family,GS_CONSTRUCTION,Doors and windows and glass
+3018,family,GS_CONSTRUCTION,Plumbing fixtures
+3025,family,GS_CONSTRUCTION,Underground mining structures and materials
+3026,family,GS_CONSTRUCTION,Structural materials
+1110,family,GS_CONSTRUCTION,Minerals and ores and metals
+1111,family,GS_CONSTRUCTION,Earth and stone
+1112,family,GS_CONSTRUCTION,Non edible plant and forestry products
+3116,family,GS_CONSTRUCTION,Hardware
+1015,family,GS_FOOD,Seeds and bulbs and seedlings and cuttings
+5030,family,GS_FOOD,Fresh fruits
+5032,family,GS_FOOD,Dried fruit
+5034,family,GS_FOOD,Frozen fruit
+5036,family,GS_FOOD,Canned or jarred fruit
+5038,family,GS_FOOD,Fresh fruit purees
+5040,family,GS_FOOD,Fresh vegetables
+5042,family,GS_FOOD,Dried vegetables
+5046,family,GS_FOOD,Canned or jarred vegetables
+5044,family,GS_FOOD,Frozen vegetables
+2413,family,GS_PACKAGING,Industrial refrigeration
+3019,family,GS_CONSTRUCTION,Construction and maintenance support equipment
+1117,family,GS_CONSTRUCTION,Alloys
+5037,family,GS_FOOD,Canned or jarred organic fruit
+1411,family,GS_PACKAGING,Paper products
+1410,family,GS_PACKAGING,Paper materials
+3024,family,GS_CONSTRUCTION,Portable Structure Building Components
+5035,family,GS_FOOD,Frozen organic fruit
+2410,family,GS_PACKAGING,Material handling machinery and equipment
+1115,family,GS_CONSTRUCTION,Fibers and threads and yarns
+1116,family,GS_CONSTRUCTION,Fabrics and leather materials
+1118,family,GS_CONSTRUCTION,Metal oxide
+1113,family,GS_CONSTRUCTION,Non edible animal products
+5021,family,GS_FOOD,Tobacco and smoking products and substitutes
+1034,family,GS_FOOD,Fresh cut floral bouquets
+1043,family,GS_FOOD,Dried cut chrysanthemums
+1040,family,GS_FOOD,Dried cut roses
+1016,family,GS_FOOD,Floriculture and silviculture products
+1020,family,GS_FOOD,Live rose bushes
+1022,family,GS_FOOD,Live plants of low species or variety count flowers
+1025,family,GS_FOOD,Live orchids
+1031,family,GS_FOOD,Fresh cut blooms of high species or variety count flowers
+5063,family,GS_FOOD,Fresh vegetables processed
+1017,family,GS_FOOD,Fertilizers and plant nutrients and herbicides
+5045,family,GS_FOOD,Frozen organic vegetables
+1033,family,GS_FOOD,Fresh cut chrysanthemums
+5043,family,GS_FOOD,Dried organic vegetables
+5047,family,GS_FOOD,Canned or jarred organic vegetables
+5048,family,GS_FOOD,Fresh vegetable purees
+5053,family,GS_FOOD,Dried non GMO fruits
+5055,family,GS_FOOD,Canned or jarred non GMO fruits
+5056,family,GS_FOOD,Non GMO fresh fruit purees
+5062,family,GS_FOOD,Non GMO fresh vegetable purees
+1011,family,GS_FOOD,Domestic pet products
+5049,family,GS_FOOD,Organic fresh vegetable purees
+1014,family,GS_FOOD,Saddlery and harness goods
+1035,family,GS_FOOD,Fresh cut carnations
+1041,family,GS_FOOD,Dried cut blooms of high species or variety count flowers
+1050,family,GS_FOOD,Fresh cut greenery
+1024,family,GS_FOOD,Live carnations
+5033,family,GS_FOOD,Dried organic fruit
+5059,family,GS_FOOD,Dried Non GMO vegetables
+1013,family,GS_FOOD,Animal containment and habitats
+1019,family,GS_FOOD,Pest control products
+5050,family,GS_FOOD,Nutritional supplements
+5061,family,GS_FOOD,Canned or jarred Non GMO vegetables
+1044,family,GS_FOOD,Dried cut carnations
+5052,family,GS_FOOD,Non GMO fresh fruits
+1045,family,GS_FOOD,Dried cut orchids
+5041,family,GS_FOOD,Organic fresh vegetables
+5054,family,GS_FOOD,Frozen non GMO fruits
+5060,family,GS_FOOD,Frozen Non GMO vegetables
+1032,family,GS_FOOD,Fresh cut blooms of low species or variety count flowers
+1042,family,GS_FOOD,Dried cut blooms of low species or variety count flowers
+5039,family,GS_FOOD,Organic fresh fruit purees
+1036,family,GS_FOOD,Fresh cut orchids
+1010,family,GS_FOOD,Live animals
+1021,family,GS_FOOD,Live plants of high species or variety count flowers
+1023,family,GS_FOOD,Live chrysanthemums
+5031,family,GS_FOOD,Organic fresh fruits
+5058,family,GS_FOOD,Non GMO fresh vegetables
+1012,family,GS_FOOD,Animal feed
+1030,family,GS_FOOD,Fresh cut rose
+3120,family,GS_PACKAGING,Adhesives and sealants
+3141,family,GS_PACKAGING,Seals
+2414,family,GS_PACKAGING,Packing supplies
+2412,family,GS_PACKAGING,Packaging materials
+1412,family,GS_PACKAGING,Industrial use papers
+1310,family,GS_PACKAGING,Rubber and elastomers
+1311,family,GS_PACKAGING,Resins and rosins and other resin derived materials
+2411,family,GS_PACKAGING,Containers and storage
