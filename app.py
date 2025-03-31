@@ -14,7 +14,7 @@ st.title("🔍 Greind - UNSPSC via GPT")
 st.markdown(
     "Upload a CSV with procurement descriptions, and we’ll classify them using GPT in batches. "
     "The model will extract a FAMILY-level UNSPSC code, match it against your approved subset, "
-    "and present the results in a downloadable format."
+    "and present the results in both CSV and Excel formats."
 )
 
 # Load OpenAI key
@@ -144,14 +144,13 @@ if desc_file:
         ax.axis("equal")
         st.pyplot(fig)
 
-        # Download results
-        file_type = st.radio("Choose file type for download:", ["CSV", "Excel"], horizontal=True)
+        # Save and provide both CSV and Excel files
+        csv_data = result_df.to_csv(index=False).encode("utf-8")
+        st.download_button("⬇️ Download Results (CSV)", csv_data, "unspsc_results.csv", "text/csv")
 
-        if file_type == "CSV":
-            st.download_button("⬇️ Download Results (CSV)", result_df.to_csv(index=False).encode("utf-8"), "unspsc_results.csv", "text/csv")
-        else:
-            output = "unspsc_results.xlsx"
-            with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
-                result_df.to_excel(writer, index=False, sheet_name="Results")
-            with open(output, "rb") as f:
-                st.download_button("⬇️ Download Results (Excel)", f.read(), file_name=output, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        excel_output = "unspsc_results.xlsx"
+        with pd.ExcelWriter(excel_output, engine="xlsxwriter") as writer:
+            result_df.to_excel(writer, index=False, sheet_name="Results")
+
+        with open(excel_output, "rb") as f:
+            st.download_button("⬇️ Download Results (Excel)", f.read(), file_name=excel_output, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
