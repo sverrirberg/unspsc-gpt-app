@@ -6,6 +6,8 @@ from typing import Tuple
 from openai import OpenAI
 import re
 import os
+import tempfile
+import glob
 
 # Setup
 st.set_page_config(page_title="🔍 Greind - UNSPSC via GPT", layout="wide")
@@ -92,22 +94,25 @@ if desc_file:
         CHUNK_SIZE = 500
         total_chunks = (len(df) - 1) // CHUNK_SIZE + 1
 
-        results = []
-        unmatched = []
-
         st.info(f"Processing {len(df)} rows in {total_chunks} chunks of {CHUNK_SIZE}...")
         progress_bar = st.progress(0)
         status_text = st.empty()
+        timer_text = st.empty()
+        start_time = time.time()
+
+        tmp_dir = tempfile.mkdtemp()
+        all_chunk_paths = []
 
         for chunk_index in range(total_chunks):
             chunk_df = df.iloc[chunk_index * CHUNK_SIZE : (chunk_index + 1) * CHUNK_SIZE]
+            chunk_results = []
 
             for i, row in chunk_df.iterrows():
                 desc = row["procurement_description"]
                 translated, gpt_code, gpt_family, gpt_label = gpt_translate_and_classify(desc)
                 matched_code, matched_level, matched_subcategory, matched_desc = match_family_code(gpt_family)
 
-                result = {
+                chunk_results.append({
                     "original_description": desc,
                     "translated_description": translated,
                     "gpt_unspsc_code": gpt_code,
@@ -117,25 +122,29 @@ if desc_file:
                     "matched_level": matched_level,
                     "matched_subcategory": matched_subcategory,
                     "matched_description": matched_desc,
-                }
-
-                results.append(result)
-                if not matched_code:
-                    unmatched.append(result)
+                })
 
                 processed = chunk_index * CHUNK_SIZE + (i % CHUNK_SIZE) + 1
                 percent = int(processed / len(df) * 100)
                 progress_bar.progress(min(processed / len(df), 1.0))
+                elapsed = int(time.time() - start_time)
+                timer_text.text(f"⏱️ Time elapsed: {elapsed} seconds")
                 status_text.text(f"Processed {processed} of {len(df)} rows ({percent}%)")
 
-            time.sleep(1)  # Pause between chunks to reduce rate limit risk
+            chunk_path = os.path.join(tmp_dir, f"chunk_{chunk_index}.csv")
+            pd.DataFrame(chunk_results).to_csv(chunk_path, index=False)
+            all_chunk_paths.append(chunk_path)
+
+            time.sleep(1)  # Pause between chunks
+
+        # Combine all chunk results
+        result_df = pd.concat([pd.read_csv(path) for path in all_chunk_paths], ignore_index=True)
+        unmatched_df = result_df[result_df["matched_subset_code"] == ""]
+        matched = len(result_df) - len(unmatched_df)
 
         progress_bar.empty()
         status_text.empty()
-
-        result_df = pd.DataFrame(results)
-        unmatched_df = pd.DataFrame(unmatched)
-        matched = len(result_df) - len(unmatched_df)
+        timer_text.empty()
 
         st.write(f"✅ Matched {matched} of {len(result_df)} rows ({round(matched / len(result_df) * 100, 1)}%)")
 
@@ -144,13 +153,12 @@ if desc_file:
         ax.axis("equal")
         st.pyplot(fig)
 
-        # Save and provide both CSV and Excel files
         csv_data = result_df.to_csv(index=False).encode("utf-8")
         st.download_button("⬇️ Download Results (CSV)", csv_data, "unspsc_results.csv", "text/csv")
 
-        excel_output = "unspsc_results.xlsx"
+        excel_output = os.path.join(tmp_dir, "unspsc_results.xlsx")
         with pd.ExcelWriter(excel_output, engine="xlsxwriter") as writer:
             result_df.to_excel(writer, index=False, sheet_name="Results")
 
         with open(excel_output, "rb") as f:
-            st.download_button("⬇️ Download Results (Excel)", f.read(), file_name=excel_output, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            st.download_button("⬇️ Download Results (Excel)", f.read(), file_name="unspsc_results.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
