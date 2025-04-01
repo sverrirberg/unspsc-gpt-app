@@ -85,80 +85,88 @@ def match_family_code(family_code: str) -> Tuple[str, str, str, str]:
     return "", "", "", ""
 
 # Main classification
-if desc_file:
+if desc_file and "run_classification" not in st.session_state:
     df = pd.read_csv(desc_file)
 
     if "procurement_description" not in df.columns:
         st.error("CSV must include a column named 'procurement_description'.")
     else:
-        CHUNK_SIZE = 500
-        total_chunks = (len(df) - 1) // CHUNK_SIZE + 1
+        if st.button("🚀 Start Classification"):
+            st.session_state.run_classification = True
+            st.rerun()
 
-        st.info(f"Processing {len(df)} rows in {total_chunks} chunks of {CHUNK_SIZE}...")
-        progress_bar = st.progress(0)
-        status_text = st.empty()
-        timer_text = st.empty()
-        start_time = time.time()
+if "run_classification" in st.session_state:
+    df = pd.read_csv(desc_file)
+    CHUNK_SIZE = 500
+    total_chunks = (len(df) - 1) // CHUNK_SIZE + 1
 
-        tmp_dir = tempfile.mkdtemp()
-        all_chunk_paths = []
+    st.info(f"Processing {len(df)} rows in {total_chunks} chunks of {CHUNK_SIZE}...")
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    timer_text = st.empty()
+    start_time = time.time()
 
-        for chunk_index in range(total_chunks):
-            chunk_df = df.iloc[chunk_index * CHUNK_SIZE : (chunk_index + 1) * CHUNK_SIZE]
-            chunk_results = []
+    tmp_dir = tempfile.mkdtemp()
+    all_chunk_paths = []
 
-            for i, row in chunk_df.iterrows():
-                desc = row["procurement_description"]
-                translated, gpt_code, gpt_family, gpt_label = gpt_translate_and_classify(desc)
-                matched_code, matched_level, matched_subcategory, matched_desc = match_family_code(gpt_family)
+    for chunk_index in range(total_chunks):
+        chunk_df = df.iloc[chunk_index * CHUNK_SIZE : (chunk_index + 1) * CHUNK_SIZE]
+        chunk_results = []
 
-                chunk_results.append({
-                    "original_description": desc,
-                    "translated_description": translated,
-                    "gpt_unspsc_code": gpt_code,
-                    "gpt_unspsc_family": gpt_family,
-                    "gpt_unspsc_label": gpt_label,
-                    "matched_subset_code": matched_code,
-                    "matched_level": matched_level,
-                    "matched_subcategory": matched_subcategory,
-                    "matched_description": matched_desc,
-                })
+        for i, row in chunk_df.iterrows():
+            desc = row["procurement_description"]
+            translated, gpt_code, gpt_family, gpt_label = gpt_translate_and_classify(desc)
+            matched_code, matched_level, matched_subcategory, matched_desc = match_family_code(gpt_family)
 
-                processed = chunk_index * CHUNK_SIZE + (i % CHUNK_SIZE) + 1
-                percent = int(processed / len(df) * 100)
-                progress_bar.progress(min(processed / len(df), 1.0))
-                elapsed = int(time.time() - start_time)
-                timer_text.text(f"⏱️ Time elapsed: {elapsed} seconds")
-                status_text.text(f"Processed {processed} of {len(df)} rows ({percent}%)")
+            chunk_results.append({
+                "original_description": desc,
+                "translated_description": translated,
+                "gpt_unspsc_code": gpt_code,
+                "gpt_unspsc_family": gpt_family,
+                "gpt_unspsc_label": gpt_label,
+                "matched_subset_code": matched_code,
+                "matched_level": matched_level,
+                "matched_subcategory": matched_subcategory,
+                "matched_description": matched_desc,
+            })
 
-            chunk_path = os.path.join(tmp_dir, f"chunk_{chunk_index}.csv")
-            pd.DataFrame(chunk_results).to_csv(chunk_path, index=False)
-            all_chunk_paths.append(chunk_path)
+            processed = chunk_index * CHUNK_SIZE + (i % CHUNK_SIZE) + 1
+            percent = int(processed / len(df) * 100)
+            progress_bar.progress(min(processed / len(df), 1.0))
+            elapsed = int(time.time() - start_time)
+            timer_text.text(f"⏱️ Time elapsed: {elapsed} seconds")
+            status_text.text(f"Processed {processed} of {len(df)} rows ({percent}%)")
 
-            time.sleep(1)  # Pause between chunks
+        chunk_path = os.path.join(tmp_dir, f"chunk_{chunk_index}.csv")
+        pd.DataFrame(chunk_results).to_csv(chunk_path, index=False)
+        all_chunk_paths.append(chunk_path)
 
-        # Combine all chunk results
-        result_df = pd.concat([pd.read_csv(path) for path in all_chunk_paths], ignore_index=True)
-        unmatched_df = result_df[result_df["matched_subset_code"] == ""]
-        matched = len(result_df) - len(unmatched_df)
+        time.sleep(1)  # Pause between chunks
 
-        progress_bar.empty()
-        status_text.empty()
-        timer_text.empty()
+    result_df = pd.concat([pd.read_csv(path) for path in all_chunk_paths], ignore_index=True)
+    unmatched_df = result_df[result_df["matched_subset_code"] == ""]
+    matched = len(result_df) - len(unmatched_df)
 
-        st.write(f"✅ Matched {matched} of {len(result_df)} rows ({round(matched / len(result_df) * 100, 1)}%)")
+    progress_bar.empty()
+    status_text.empty()
+    timer_text.empty()
 
-        fig, ax = plt.subplots(figsize=(1.5, 1.5))
-        ax.pie([matched, len(unmatched_df)], labels=["Matched", "Unmatched"], autopct="%1.1f%%", startangle=90, textprops={'fontsize': 6})
-        ax.axis("equal")
-        st.pyplot(fig)
+    st.success(f"✅ Matched {matched} of {len(result_df)} rows ({round(matched / len(result_df) * 100, 1)}%)")
 
-        csv_data = result_df.to_csv(index=False).encode("utf-8")
-        st.download_button("⬇️ Download Results (CSV)", csv_data, "unspsc_results.csv", "text/csv")
+    fig, ax = plt.subplots(figsize=(1.5, 1.5))
+    ax.pie([matched, len(unmatched_df)], labels=["Matched", "Unmatched"], autopct="%1.1f%%", startangle=90, textprops={'fontsize': 6})
+    ax.axis("equal")
+    st.pyplot(fig)
 
-        excel_output = os.path.join(tmp_dir, "unspsc_results.xlsx")
-        with pd.ExcelWriter(excel_output, engine="xlsxwriter") as writer:
-            result_df.to_excel(writer, index=False, sheet_name="Results")
+    csv_data = result_df.to_csv(index=False).encode("utf-8")
+    st.download_button("⬇️ Download Results (CSV)", csv_data, "unspsc_results.csv", "text/csv")
 
-        with open(excel_output, "rb") as f:
-            st.download_button("⬇️ Download Results (Excel)", f.read(), file_name="unspsc_results.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    excel_output = os.path.join(tmp_dir, "unspsc_results.xlsx")
+    with pd.ExcelWriter(excel_output, engine="xlsxwriter") as writer:
+        result_df.to_excel(writer, index=False, sheet_name="Results")
+
+    with open(excel_output, "rb") as f:
+        st.download_button("⬇️ Download Results (Excel)", f.read(), file_name="unspsc_results.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+    # Clear session to prevent rerun
+    del st.session_state["run_classification"]
