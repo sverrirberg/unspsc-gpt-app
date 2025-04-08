@@ -40,13 +40,18 @@ def normalize_code(code: str) -> str:
 
 def gpt_translate_and_classify(desc: str) -> Tuple[str, str, str, str]:
     prompt = f"""
-You are a procurement assistant. Given the following product or service description:
+You are a specialized procurement classification expert. Your task is to match procurement item descriptions to the most accurate UNSPSC (United Nations Standard Products and Services Code) code:
 "{desc}"
 
 1. Translate it to English (if needed)
-2. Suggest the most appropriate 8-digit UNSPSC code
-3. Include the 4-digit FAMILY-level UNSPSC code that the 8-digit code belongs to
-Only use codes from these segments: 10, 11, 13, 14, 24, 30, 31, 43, 50, 52.
+2. Analyze the procurement description provided
+3. Identify the specific product or service category
+4. Match it to the most appropriate UNSPSC code (8-digit format)
+5. Return ONLY the UNSPSC code and its description in the specified format
+6. If you cannot find an exact match, identify the closest appropriate category
+7. If you're uncertain about the match, indicate your confidence level
+8. Do NOT create fictional UNSPSC codes
+9. Suggest the most appropriate 8-digit UNSPSC code
 
 Return in this format:
 Translated: <translated_description>
